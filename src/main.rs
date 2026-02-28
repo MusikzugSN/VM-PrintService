@@ -17,12 +17,12 @@ mod linux_service;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-fn init_tracing(foreground: bool) -> Option<tracing_appender::non_blocking::WorkerGuard> {
+fn init_tracing(_foreground: bool) -> Option<tracing_appender::non_blocking::WorkerGuard> {
     let env_filter = tracing_subscriber::EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info"));
 
     #[cfg(windows)]
-    if !foreground {
+    if !_foreground {
         let log_dir = std::path::PathBuf::from(r"C:\ProgramData\VM-PrintService\logs");
         std::fs::create_dir_all(&log_dir).expect("Failed to create log directory");
 

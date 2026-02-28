@@ -1,6 +1,6 @@
 [package]
 name = "VM-PrintService"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2024"
 authors = ["Henrik Mertens <henrik@mertens.digital>"]
 description = "VM Print Service"
@@ -28,7 +28,7 @@ windows-service = "0.8"
 
 [package.metadata.deb]
 maintainer = "Henrik Mertens <henrik@mertens.digital>"
-depends = "$auto"
+depends = "$auto, libcups2"
 section = "utility"
 priority = "optional"
 assets = [
