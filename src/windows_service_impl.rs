@@ -1,8 +1,8 @@
-﻿use tracing::{error, info};
 use std::ffi::OsString;
 use std::sync::OnceLock;
 use std::time::Duration;
 use tokio_util::sync::CancellationToken;
+use tracing::{error, info};
 use windows_service::service::{
     ServiceControl, ServiceControlAccept, ServiceExitCode, ServiceState, ServiceStatus, ServiceType,
 };
@@ -17,7 +17,9 @@ const SERVICE_TYPE: ServiceType = ServiceType::OWN_PROCESS;
 static RUNTIME: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
 
 pub fn run(runtime: tokio::runtime::Runtime) -> Result<(), String> {
-    RUNTIME.set(runtime).map_err(|_| "Runtime already set".to_string())?;
+    RUNTIME
+        .set(runtime)
+        .map_err(|_| "Runtime already set".to_string())?;
     service_dispatcher::start(SERVICE_NAME, ffi_service_main)
         .map_err(|e| format!("Failed to start service dispatcher: {}", e))
 }

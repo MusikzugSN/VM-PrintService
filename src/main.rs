@@ -1,9 +1,9 @@
-use tracing::info;
 use tokio_util::sync::CancellationToken;
+use tracing::info;
 
+mod print;
 mod service;
 mod update;
-mod print;
 
 #[cfg(windows)]
 #[macro_use]
@@ -55,7 +55,12 @@ fn main() {
 
     info!("VM-PrintService v{}", VERSION);
     update::auto_update();
-    let runtime = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(2)
+        .enable_all()
+        .build()
+        .expect("Failed to create Tokio runtime");
 
     if foreground {
         info!("Starting in foreground mode");

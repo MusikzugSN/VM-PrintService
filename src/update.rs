@@ -29,11 +29,17 @@ pub fn auto_update() {
                 }
             }
             Err(e) => {
-                warn!("Auto-update failed (continuing with current version): {}", e);
+                warn!(
+                    "Auto-update failed (continuing with current version): {}",
+                    e
+                );
             }
         },
         Err(e) => {
-            warn!("Could not configure auto-update (continuing with current version): {}", e);
+            warn!(
+                "Could not configure auto-update (continuing with current version): {}",
+                e
+            );
         }
     }
 }

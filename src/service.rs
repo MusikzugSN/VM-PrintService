@@ -1,7 +1,7 @@
 use actix_cors::Cors;
-use actix_web::{web, App, HttpResponse, HttpServer};
-use tracing::info;
+use actix_web::{App, HttpResponse, HttpServer, web};
 use tokio_util::sync::CancellationToken;
+use tracing::info;
 
 use crate::print;
 
@@ -49,7 +49,10 @@ async fn health() -> HttpResponse {
 }
 
 pub async fn run_service_loop(cancel_token: CancellationToken) {
-    info!("Starting Actix web server on {}:{}", LISTEN_ADDR, LISTEN_PORT);
+    info!(
+        "Starting Actix web server on {}:{}",
+        LISTEN_ADDR, LISTEN_PORT
+    );
 
     let server = HttpServer::new(move || {
         let cors = Cors::default()
@@ -79,7 +82,10 @@ pub async fn run_service_loop(cancel_token: CancellationToken) {
         handle.stop(true).await;
     });
 
-    info!("Service loop started — listening on http://{}:{}", LISTEN_ADDR, LISTEN_PORT);
+    info!(
+        "Service loop started — listening on http://{}:{}",
+        LISTEN_ADDR, LISTEN_PORT
+    );
 
     server.await.ok();
 

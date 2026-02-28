@@ -122,14 +122,12 @@ async fn download_to_temp(
         .or_else(|| file_entry.url.rsplit('/').next())
         .and_then(|name| {
             let name = name.split('?').next().unwrap_or(name);
-            Path::new(name)
-                .extension()
-                .and_then(|ext| ext.to_str())
+            Path::new(name).extension().and_then(|ext| ext.to_str())
         })
         .unwrap_or("pdf");
 
-    let temp_dir = tempfile::tempdir()
-        .map_err(|e| format!("Failed to create temp directory: {}", e))?;
+    let temp_dir =
+        tempfile::tempdir().map_err(|e| format!("Failed to create temp directory: {}", e))?;
     let temp_path = temp_dir
         .path()
         .join(format!("print_{:04}.{}", index, extension));

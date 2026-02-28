@@ -1,5 +1,5 @@
-﻿use tracing::info;
 use tokio_util::sync::CancellationToken;
+use tracing::info;
 
 use crate::service::run_service_loop;
 
