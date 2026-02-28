@@ -106,6 +106,32 @@
                                 DiskId='1'
                                 Source='$(var.CargoTargetBinDir)\VM-PrintService.exe'
                                 KeyPath='yes'/>
+
+                            <ServiceInstall
+                                Id='VMPrintServiceInstall'
+                                Type='ownProcess'
+                                Name='VMPrintService'
+                                DisplayName='VM PrintService'
+                                Description='VM Print Service'
+                                Start='auto'
+                                Account='LocalSystem'
+                                ErrorControl='normal'>
+                                <util:ServiceConfig
+                                    xmlns:util='http://schemas.microsoft.com/wix/UtilExtension'
+                                    FirstFailureActionType='restart'
+                                    SecondFailureActionType='restart'
+                                    ThirdFailureActionType='restart'
+                                    RestartServiceDelayInSeconds='5'
+                                    ResetPeriodInDays='1'/>
+                            </ServiceInstall>
+
+                            <ServiceControl
+                                Id='VMPrintServiceControl'
+                                Name='VMPrintService'
+                                Start='install'
+                                Stop='both'
+                                Remove='uninstall'
+                                Wait='yes'/>
                         </Component>
                     </Directory>
                 </Directory>
