@@ -1,6 +1,6 @@
 [package]
 name = "VM-PrintService"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 authors = ["Henrik Mertens <henrik@mertens.digital>"]
 description = "VM Print Service"
@@ -9,9 +9,19 @@ license = "GPL-3.0"
 [dependencies]
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+tracing-appender = "0.2"
 tokio = { version = "1", features = ["full"] }
 tokio-util = "0.7"
 self_update = "0.42"
+actix-web = "4"
+actix-cors = "0.7"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.13", features = ["stream"] }
+tempfile = "3"
+tokio-stream = "0.1"
+futures-util = "0.3"
+printers = "2"
 
 [target.'cfg(windows)'.dependencies]
 windows-service = "0.8"

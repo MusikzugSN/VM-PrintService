@@ -115,15 +115,7 @@
                                 Description='VM Print Service'
                                 Start='auto'
                                 Account='LocalSystem'
-                                ErrorControl='normal'>
-                                <util:ServiceConfig
-                                    xmlns:util='http://schemas.microsoft.com/wix/UtilExtension'
-                                    FirstFailureActionType='restart'
-                                    SecondFailureActionType='restart'
-                                    ThirdFailureActionType='restart'
-                                    RestartServiceDelayInSeconds='5'
-                                    ResetPeriodInDays='1'/>
-                            </ServiceInstall>
+                                ErrorControl='normal'/>
 
                             <ServiceControl
                                 Id='VMPrintServiceControl'
@@ -160,6 +152,20 @@
         </Feature>
 
         <SetProperty Id='ARPINSTALLLOCATION' Value='[APPLICATIONFOLDER]' After='CostFinalize'/>
+
+        <!-- Configure service failure recovery: restart on failure after 5 seconds -->
+        <SetProperty Id='COMSPEC' Value='[SystemFolder]cmd.exe' Sequence='execute' Before='SetServiceRecovery'/>
+        <CustomAction
+            Id='SetServiceRecovery'
+            Property='COMSPEC'
+            ExeCommand='/c sc.exe failure VMPrintService reset= 86400 actions= restart/5000/restart/5000/restart/5000'
+            Execute='deferred'
+            Impersonate='no'
+            Return='ignore'/>
+
+        <InstallExecuteSequence>
+            <Custom Action='SetServiceRecovery' After='StartServices'>NOT Installed OR REINSTALL</Custom>
+        </InstallExecuteSequence>
 
         
         <!--
