@@ -1,0 +1,21 @@
+[Unit]
+Description=VM PrintService
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/vm-printservice
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vm-printservice
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

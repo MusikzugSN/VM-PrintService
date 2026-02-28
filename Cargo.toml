@@ -1,0 +1,33 @@
+[package]
+name = "VM-PrintService"
+version = "0.1.1"
+edition = "2024"
+authors = ["Henrik Mertens <henrik@mertens.digital>"]
+description = "VM Print Service"
+license = "GPL-3.0"
+
+[dependencies]
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+tokio = { version = "1", features = ["full"] }
+tokio-util = "0.7"
+self_update = "0.42"
+
+[target.'cfg(windows)'.dependencies]
+windows-service = "0.8"
+
+[package.metadata.deb]
+maintainer = "Henrik Mertens <henrik@mertens.digital>"
+depends = "$auto"
+section = "utility"
+priority = "optional"
+assets = [
+    ["target/release/VM-PrintService", "usr/local/bin/vm-printservice", "755"],
+    ["vm-printservice.service", "etc/systemd/system/vm-printservice.service", "644"],
+]
+
+[package.metadata.wix]
+upgrade-guid = "9CC6749F-2345-46A9-9EDC-72498A7025F5"
+path-guid = "67C85A01-6AED-43A9-96F8-6781CD480A05"
+frguid = "E8BA73FB-7E96-4CDD-8C60-79450CFC540F"
+install-to = "ProgramFiles64Folder"
