@@ -31,7 +31,7 @@ VM-PrintService -f
 
 ## API
 
-All endpoints are served on `http://127.0.0.1:19191`.
+All endpoints are served on `http://127.0.0.1:1913`.
 
 ### `GET /api/health`
 
