@@ -1,4 +1,5 @@
 using VM.Druckdienst.Endpoints;
+using VM.Druckdienst.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
+builder.Services.AddSingleton<DruckerService>();
 var app = builder.Build();
 
 app.UseCors("Website");

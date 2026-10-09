@@ -1,4 +1,5 @@
 ﻿using VM.Druckdienst.Models;
+using VM.Druckdienst.Services;
 
 namespace VM.Druckdienst.Endpoints;
 
@@ -6,15 +7,18 @@ public static class DruckerEndpoints
 {
     public static void MapDruckerEndpoints(this WebApplication app)
     {
-        app.MapGet("/api/v1/printers", () =>
+        app.MapGet("/api/v1/printers", (DruckerService service) =>
         {
-            var drucker = new List<Drucker>
-            {
-                new Drucker { Name = "Buero-Drucker", IstStandard = true,
-                              Papierfaecher = new List<string> { "Tray1", "Tray2" } },
-                new Drucker { Name = "PDF", IstStandard = false,
-                              Papierfaecher = new List<string>() }
-            };
+            string? standard = service.StandardDruckerLesen();
+
+            var drucker = service.DruckerNamenLesen()
+                .Select(name => new Drucker
+                {
+                    Name = name,
+                    IstStandard = name == standard,
+                    Papierfaecher = service.PapierfaecherLesen(name)
+                })
+                .ToList();
 
             return Results.Ok(drucker);
         });

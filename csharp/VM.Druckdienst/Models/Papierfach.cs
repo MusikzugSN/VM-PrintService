@@ -1,4 +1,4 @@
-﻿namespace VM.Druckdienst.Models.Models
+﻿namespace VM.Druckdienst.Models
 {
     public class Papierfach
     {

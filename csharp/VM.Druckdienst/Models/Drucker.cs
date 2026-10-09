@@ -4,5 +4,5 @@ public class Drucker
 {
     public string Name { get; set; } = "";
     public bool IstStandard { get; set; }
-    public List<string> Papierfaecher { get; set; } = new();
+    public List<Papierfach> Papierfaecher { get; set; } = new();
 }
