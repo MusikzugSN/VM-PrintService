@@ -1,13 +1,12 @@
 ﻿using System.Diagnostics;
 using VM.Druckdienst.Models;
+using VM.Druckdienst.Models.Models;
 
 namespace VM.Druckdienst.Services;
 
 public class DruckerService
 {
-    // Runs a Linux command and returns its output.
-    // On Windows (development) it goes through WSL, on Linux it runs directly.
-    // LANG=C = English output, so we can read it the same way everywhere.
+   
     public string BefehlAusfuehren(string befehl)
     {
         var info = new ProcessStartInfo
@@ -25,7 +24,7 @@ public class DruckerService
         return ausgabe;
     }
 
-    // "lpstat -p" → line: "printer PDF is idle.  enabled since ..."
+   
     public List<string> DruckerNamenLesen()
     {
         string ausgabe = BefehlAusfuehren("lpstat -p");
@@ -41,4 +40,43 @@ public class DruckerService
 
         return namen;
     }
+    public string? StandardDruckerLesen()
+    {
+        string ausgabe = BefehlAusfuehren("lpstat -d").Trim();
+        int pos = ausgabe.IndexOf(": ");
+
+        if (ausgabe.StartsWith("no system default") || pos < 0)
+        {
+            return null;
+        }
+
+        return ausgabe.Substring(pos + 2).Trim();
+    }
+    public List<Papierfach> PapierfaecherLesen(string drucker)
+    {
+        string ausgabe = BefehlAusfuehren($"lpoptions -p {drucker} -l");
+        var faecher = new List<Papierfach>();
+
+        foreach (string zeile in ausgabe.Split('\n'))
+        {
+            if (!zeile.StartsWith("InputSlot/"))
+            {
+                continue;
+            }
+
+            string werte = zeile.Substring(zeile.IndexOf(':') + 1).Trim();
+
+            foreach (string wert in werte.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            {
+                faecher.Add(new Papierfach
+                {
+                    Name = wert.TrimStart('*'),
+                    IstStandard = wert.StartsWith('*')
+                });
+            }
+        }
+
+        return faecher;
+    }
+
 }
