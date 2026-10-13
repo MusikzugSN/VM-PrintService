@@ -18,5 +18,6 @@ app.UseCors("Website");
 
 app.MapGet("/api/v1/health", () => Results.Ok(new { status = "ok" }));
 app.MapDruckerEndpoints();
+app.MapDruckEndpoints();
 
 app.Run();

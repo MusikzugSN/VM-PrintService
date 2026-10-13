@@ -1,0 +1,28 @@
+@host = http://localhost:8416
+
+### 1. OK → 200
+POST {{host}}/api/v1/print/abc123
+Content-Type: application/json
+
+{ "drucker": "PDF" }
+
+### 2. No printer → 400
+POST {{host}}/api/v1/print/abc123
+Content-Type: application/json
+
+{ }
+
+### 3. Bad characters → 400
+POST {{host}}/api/v1/print/abc123
+Content-Type: application/json
+
+{ "drucker": "PDF; rm -rf /" }
+
+### 4. Unknown printer → 400
+POST {{host}}/api/v1/print/abc123
+Content-Type: application/json
+
+{ "drucker": "GibtEsNicht" }
+
+### 5. Printers
+GET {{host}}/api/v1/printers
