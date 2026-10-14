@@ -77,5 +77,56 @@ public class DruckerService
 
         return faecher;
     }
+    public static string LinuxPfad(string pfad)
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return pfad;
+        }
+
+        char laufwerk = char.ToLower(pfad[0]);
+        return $"/mnt/{laufwerk}{pfad.Substring(2).Replace('\\', '/')}";
+    }
+
+    public void GruppenDrucken(List<Druckgruppe> gruppen, string drucker,
+                               Dictionary<Papierformat, string> fachZuordnung, Druckergebnis ergebnis)
+    {
+        foreach (var gruppe in gruppen)
+        {
+            foreach (var druckSeite in gruppe.Seiten)
+            {
+                ergebnis.Gesamt++;
+                string wo = $"Note {druckSeite.Notenblatt.Nummer}, Seite {druckSeite.Seite.Nummer}";
+
+                if (gruppe.Format == Papierformat.Unbekannt)
+                {
+                    ergebnis.Fehlgeschlagen++;
+                    ergebnis.Fehler.Add($"{wo}: unbekanntes Papierformat");
+                    continue;
+                }
+
+                string befehl = $"lp -d {drucker} -o media={gruppe.Format} -o page-ranges={druckSeite.Seite.Nummer}";
+
+                if (fachZuordnung.TryGetValue(gruppe.Format, out string? fach))
+                {
+                    befehl += $" -o InputSlot={fach}";
+                }
+
+                befehl += $" \"{LinuxPfad(druckSeite.Notenblatt.PdfPfad)}\"";
+
+                string ausgabe = BefehlAusfuehren(befehl);
+
+                if (ausgabe.StartsWith("request id is"))
+                {
+                    ergebnis.Erfolgreich++;
+                }
+                else
+                {
+                    ergebnis.Fehlgeschlagen++;
+                    ergebnis.Fehler.Add($"{wo}: lp hat nicht gedruckt");
+                }
+            }
+        }
+    }
 
 }
