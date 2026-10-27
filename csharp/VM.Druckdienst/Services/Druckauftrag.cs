@@ -4,6 +4,11 @@ namespace VM.Druckdienst.Services;
 
 public class Druckauftrag
 {
+    public static Druckeinstellung? EinstellungFinden(List<Druckeinstellung> einstellungen, int seiten)
+    {
+        return einstellungen.FirstOrDefault(e => e.PasstZu(seiten));
+    }
+
     public string Token { get; }
     public string Drucker { get; }
     public List<Notenblatt> Noten { get; }

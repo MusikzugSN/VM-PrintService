@@ -1,34 +1,48 @@
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-const string GueltigerToken = "abc123";
+
+
 string ordner = Path.GetFullPath(Path.Combine(
     builder.Environment.ContentRootPath,
     builder.Configuration["TestPdfOrdner"] ?? "../TestPdfs"));
 
-var noten = new Dictionary<int, (int Nummer, string Datei)>
+
+var dateien = new Dictionary<int, string>
 {
-    [10] = (1, "test-a4.pdf"),
-    [20] = (2, "test-a5.pdf"),
-    [30] = (3, "test-a3.pdf"),
-    [40] = (4, "test-gemischt.pdf")
+    [10] = "test-a4.pdf",
+    [20] = "test-a5.pdf",
+    [30] = "test-a3.pdf",
+    [40] = "test-gemischt.pdf",
+    [50] = "test-kaputt.pdf",     
+    [60] = "test-letter.pdf"      
 };
 
+
+var tokens = new Dictionary<string, int[]>
+{
+    ["abc123"] = new[] { 10, 20, 30, 40 },  
+    ["kaputt"] = new[] { 10, 99 },           
+    ["pdf-kaputt"] = new[] { 10, 50 },                  
+    ["letter"] = new[] { 10, 60 }            
+};
+
+// 1. Which notes belong to the token?
 app.MapGet("/api/v1/print/token-information", (string token) =>
 {
-    if (token != GueltigerToken)
+    if (!tokens.TryGetValue(token, out int[]? ids))
         return Results.NotFound(new { fehler = "Token ungültig" });
 
     return Results.Ok(new
     {
         token,
-        noten = noten.Select(n => new { id = n.Key, nummer = n.Value.Nummer })
+        noten = ids.Select((id, i) => new { id, nummer = i + 1 })
     });
 });
 
 app.MapGet("/api/v1/print/print-information", (string token) =>
 {
-    if (token != GueltigerToken)
+    if (!tokens.ContainsKey(token))
         return Results.NotFound(new { fehler = "Token ungültig" });
 
     return Results.Ok(new[]
@@ -40,14 +54,13 @@ app.MapGet("/api/v1/print/print-information", (string token) =>
 
 app.MapGet("/api/v1/print/file/{id:int}", (int id, string token) =>
 {
-    if (token != GueltigerToken)
+    if (!tokens.ContainsKey(token))
         return Results.NotFound(new { fehler = "Token ungültig" });
 
-    if (!noten.ContainsKey(id))
+    if (!dateien.ContainsKey(id))
         return Results.NotFound(new { fehler = $"Datei {id} gibt es nicht" });
 
-    string pfad = Path.Combine(ordner, noten[id].Datei);
-    return Results.File(pfad, "application/pdf");
+    return Results.File(Path.Combine(ordner, dateien[id]), "application/pdf");
 });
 
 app.Run();
