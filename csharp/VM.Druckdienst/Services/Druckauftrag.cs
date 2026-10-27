@@ -35,11 +35,20 @@ public class Druckauftrag
             blatt.SeitenLaden();
         }
 
-        var sortiert = DruckPlanung.Sortieren(Noten);
+        
+        foreach (var blatt in Noten)
+        {
+            try
+            {
+                blatt.SeitenLaden();
+            }
+            catch (Exception ex)
+            {
+                throw new PdfNichtLesbarException(
+                    $"Note {blatt.Nummer} (Datei {blatt.Id}) ist kein lesbares PDF.", ex);
+            }
+        }
 
-        var gruppen = DruckPlanung.Gruppieren(sortiert);
-
-        ergebnis.Gesamt = gruppen.Sum(g => g.Seiten.Count);
 
         return ergebnis;
     }
