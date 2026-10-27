@@ -27,8 +27,7 @@ public class ApiClient
     }
     public async Task<string> DateiLaden(int id, string token)
     {
-        string ordner = Path.Combine(Path.GetTempPath(), "vm-druckdienst", token);
-        Directory.CreateDirectory(ordner);
+        string ordner = TempOrdner(token); Directory.CreateDirectory(ordner);
 
         byte[] daten = await _http.GetByteArrayAsync(
             $"print/file/{id}?token={Uri.EscapeDataString(token)}");
@@ -37,6 +36,10 @@ public class ApiClient
         await File.WriteAllBytesAsync(pfad, daten);
 
         return pfad;
+    }
+    public static string TempOrdner(string token)
+    {
+        return Path.Combine(Path.GetTempPath(), "vm-druckdienst", token);
     }
 
 }

@@ -11,7 +11,6 @@ public class NotenLader
         _api = api;
     }
 
-    // Loads all notes of a token. If one fails → exception, nothing is printed.
     public async Task<List<Notenblatt>> NotenLaden(string token)
     {
         TokenInformation? info = await _api.TokenInformationLesen(token);
@@ -36,5 +35,23 @@ public class NotenLader
         }
 
         return noten;
+    }
+    public static void TempDateienLoeschen(string token)
+    {
+        string ordner = ApiClient.TempOrdner(token);
+
+        try
+        {
+            if (Directory.Exists(ordner))
+            {
+                Directory.Delete(ordner, recursive: true);
+            }
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
     }
 }
