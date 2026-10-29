@@ -27,7 +27,6 @@ var tokens = new Dictionary<string, int[]>
     ["letter"] = new[] { 10, 60 }            
 };
 
-// 1. Which notes belong to the token?
 app.MapGet("/api/v1/print/token-information", (string token) =>
 {
     if (!tokens.TryGetValue(token, out int[]? ids))
