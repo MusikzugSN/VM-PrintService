@@ -32,12 +32,6 @@ public class Druckauftrag
 
         foreach (var blatt in Noten)
         {
-            blatt.SeitenLaden();
-        }
-
-        
-        foreach (var blatt in Noten)
-        {
             try
             {
                 blatt.SeitenLaden();
@@ -49,7 +43,6 @@ public class Druckauftrag
             }
         }
 
-
         var sortiert = DruckPlanung.Sortieren(Noten);
 
         var gruppen = DruckPlanung.Gruppieren(sortiert);
@@ -59,5 +52,5 @@ public class Druckauftrag
         return ergebnis;
     }
 
-        
+
 }
