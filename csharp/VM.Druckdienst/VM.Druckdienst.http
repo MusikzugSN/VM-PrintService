@@ -26,3 +26,33 @@ Content-Type: application/json
 
 ### 5. Printers
 GET {{host}}/api/v1/printers
+
+### 6. Wrong token → 404
+POST {{host}}/api/v1/print/falsch
+Content-Type: application/json
+
+{ "drucker": "PDF" }
+
+### 7. Note file missing → 404, nothing printed
+POST {{host}}/api/v1/print/kaputt
+Content-Type: application/json
+
+{ "drucker": "PDF" }
+
+### 8. Damaged PDF → 422, nothing printed
+POST {{host}}/api/v1/print/pdf-kaputt
+Content-Type: application/json
+
+{ "drucker": "PDF" }
+
+### 9. Unknown format → 200, 1 of 2 pages printed
+POST {{host}}/api/v1/print/letter
+Content-Type: application/json
+
+{ "drucker": "PDF" }
+
+### 10. Bad character in token → 400
+POST {{host}}/api/v1/print/abc.123
+Content-Type: application/json
+
+{ "drucker": "PDF" }
