@@ -50,6 +50,14 @@ public class Druckauftrag
         }
 
 
+        var sortiert = DruckPlanung.Sortieren(Noten);
+
+        var gruppen = DruckPlanung.Gruppieren(sortiert);
+
+        _druckerService.GruppenDrucken(gruppen, Drucker, _fachZuordnung, ergebnis);
+
         return ergebnis;
     }
+
+        
 }
