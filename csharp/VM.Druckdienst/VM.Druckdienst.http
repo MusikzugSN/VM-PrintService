@@ -56,3 +56,9 @@ POST {{host}}/api/v1/print/abc.123
 Content-Type: application/json
 
 { "drucker": "PDF" }
+
+### 11. API not reachable → 502
+# Close only the VM.TestApi window, then send request 1 again.
+
+### 12. Log file
+# Open bin\Debug\net10.0\logs\druckdienst-<date>.log and check the lines of tests 1–11.
