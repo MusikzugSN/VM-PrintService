@@ -8,6 +8,8 @@ public class Notenblatt
     public int Nummer { get; set; }      
     public string PdfPfad { get; set; } = "";
     public List<Seite> Seiten { get; set; } = new();
+    public bool Duplex { get; set; }
+
 
     public void SeitenLaden()
     {

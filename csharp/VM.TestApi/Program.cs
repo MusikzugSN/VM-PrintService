@@ -14,17 +14,20 @@ var dateien = new Dictionary<int, string>
     [20] = "test-a5.pdf",
     [30] = "test-a3.pdf",
     [40] = "test-gemischt.pdf",
-    [50] = "test-kaputt.pdf",     
-    [60] = "test-letter.pdf"      
+    [50] = "test-kaputt.pdf",
+    [60] = "test-letter.pdf",
+    [70] = "test-a4-2seiten.pdf"
 };
+
 
 
 var tokens = new Dictionary<string, int[]>
 {
-    ["abc123"] = new[] { 10, 20, 30, 40 },  
-    ["kaputt"] = new[] { 10, 99 },           
-    ["pdf-kaputt"] = new[] { 10, 50 },                  
-    ["letter"] = new[] { 10, 60 }            
+    ["abc123"] = new[] { 10, 20, 30, 40 },
+    ["kaputt"] = new[] { 10, 99 },
+    ["pdf-kaputt"] = new[] { 10, 50 },
+    ["letter"] = new[] { 10, 60 },
+    ["duplex"] = new[] { 10, 70 }   
 };
 
 app.MapGet("/api/v1/print/token-information", (string token) =>
@@ -62,4 +65,6 @@ app.MapGet("/api/v1/print/file/{id:int}", (int id, string token) =>
     return Results.File(Path.Combine(ordner, dateien[id]), "application/pdf");
 });
 
+
 app.Run();
+
