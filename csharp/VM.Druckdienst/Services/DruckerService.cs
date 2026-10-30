@@ -5,7 +5,14 @@ namespace VM.Druckdienst.Services;
 
 public class DruckerService
 {
-   
+    private readonly ILogger<DruckerService> _log;
+
+    public DruckerService(ILogger<DruckerService> log)
+    {
+        _log = log;
+    }
+
+
     public string BefehlAusfuehren(string befehl)
     {
         var info = new ProcessStartInfo
@@ -91,39 +98,65 @@ public class DruckerService
     public void GruppenDrucken(List<Druckgruppe> gruppen, string drucker,
                                Dictionary<Papierformat, string> fachZuordnung, Druckergebnis ergebnis)
     {
-        foreach (var gruppe in gruppen)
         {
-            foreach (var druckSeite in gruppe.Seiten)
+            foreach (var gruppe in gruppen)
             {
-                ergebnis.Gesamt++;
-                string wo = $"Note {druckSeite.Notenblatt.Nummer}, Seite {druckSeite.Seite.Nummer}";
+                var bloecke = new List<List<DruckSeite>>();
 
-                if (gruppe.Format == Papierformat.Unbekannt)
+                foreach (var druckSeite in gruppe.Seiten)
                 {
-                    ergebnis.Fehlgeschlagen++;
-                    ergebnis.Fehler.Add($"{wo}: unbekanntes Papierformat");
-                    continue;
+                    var letzter = bloecke.LastOrDefault();
+
+                    if (letzter != null && letzter[0].Notenblatt == druckSeite.Notenblatt)
+                    {
+                        letzter.Add(druckSeite);
+                    }
+                    else
+                    {
+                        bloecke.Add(new List<DruckSeite> { druckSeite });
+                    }
                 }
 
-                string befehl = $"lp -d {drucker} -o media={gruppe.Format} -o page-ranges={druckSeite.Seite.Nummer}";
-
-                if (fachZuordnung.TryGetValue(gruppe.Format, out string? fach))
+                foreach (var block in bloecke)
                 {
-                    befehl += $" -o InputSlot={fach}";
-                }
+                    Notenblatt blatt = block[0].Notenblatt;
+                    string seiten = string.Join(",", block.Select(s => s.Seite.Nummer));
+                    string wo = $"Note {blatt.Nummer}, Seite {seiten}";
 
-                befehl += $" \"{LinuxPfad(druckSeite.Notenblatt.PdfPfad)}\"";
+                    ergebnis.Gesamt += block.Count;
 
-                string ausgabe = BefehlAusfuehren(befehl);
+                    if (gruppe.Format == Papierformat.Unbekannt)
+                    {
+                        ergebnis.Fehlgeschlagen += block.Count;
+                        ergebnis.Fehler.Add($"{wo}: unbekanntes Papierformat");
+                        continue;
+                    }
 
-                if (ausgabe.StartsWith("request id is"))
-                {
-                    ergebnis.Erfolgreich++;
-                }
-                else
-                {
-                    ergebnis.Fehlgeschlagen++;
-                    ergebnis.Fehler.Add($"{wo}: lp hat nicht gedruckt");
+                    string befehl = $"lp -d {drucker} -o media={gruppe.Format} -o page-ranges={seiten}";
+
+                    if (fachZuordnung.TryGetValue(gruppe.Format, out string? fach))
+                    {
+                        befehl += $" -o InputSlot={fach}";
+                    }
+
+                    befehl += blatt.Duplex && block.Count > 1
+                        ? " -o sides=two-sided-long-edge"
+                        : " -o sides=one-sided";
+
+                    befehl += $" \"{LinuxPfad(blatt.PdfPfad)}\"";
+
+                    _log.LogInformation("lp: {Befehl}", befehl);
+                    string ausgabe = BefehlAusfuehren(befehl);
+
+                    if (ausgabe.StartsWith("request id is"))
+                    {
+                        ergebnis.Erfolgreich += block.Count;
+                    }
+                    else
+                    {
+                        ergebnis.Fehlgeschlagen += block.Count;
+                        ergebnis.Fehler.Add($"{wo}: lp hat nicht gedruckt");
+                    }
                 }
             }
         }
