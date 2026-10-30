@@ -15,13 +15,16 @@ public class Druckauftrag
 
     private readonly DruckerService _druckerService;
     private readonly Dictionary<Papierformat, string> _fachZuordnung;
+    private readonly List<Druckeinstellung> _einstellungen;
 
     public Druckauftrag(string token, string drucker, List<Notenblatt> noten,
+                        List<Druckeinstellung> einstellungen,
                         DruckerService druckerService, Dictionary<Papierformat, string> fachZuordnung)
     {
         Token = token;
         Drucker = drucker;
         Noten = noten;
+        _einstellungen = einstellungen;
         _druckerService = druckerService;
         _fachZuordnung = fachZuordnung;
     }
@@ -41,6 +44,9 @@ public class Druckauftrag
                 throw new PdfNichtLesbarException(
                     $"Note {blatt.Nummer} (Datei {blatt.Id}) ist kein lesbares PDF.", ex);
             }
+
+            Druckeinstellung? einstellung = EinstellungFinden(_einstellungen, blatt.Seiten.Count);
+            blatt.Duplex = einstellung?.Duplex ?? false;
         }
 
         var sortiert = DruckPlanung.Sortieren(Noten);
@@ -51,6 +57,4 @@ public class Druckauftrag
 
         return ergebnis;
     }
-
-
 }

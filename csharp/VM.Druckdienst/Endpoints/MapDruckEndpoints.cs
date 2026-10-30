@@ -11,7 +11,7 @@ public static class DruckEndpoints
     {
         app.MapPost("/api/v1/print/{token}",
             async (string token, Druckanfrage? anfrage, DruckerService service,
-                   NotenLader lader, IConfiguration config, ILoggerFactory logFactory) =>
+                   NotenLader lader,ApiClient api, IConfiguration config, ILoggerFactory logFactory) =>
             {
                 var log = logFactory.CreateLogger("Druckauftrag");
 
@@ -62,10 +62,12 @@ public static class DruckEndpoints
                 try
                 {
                     List<Notenblatt> noten;
+                    List<Druckeinstellung> einstellungen;
 
                     try
                     {
                         noten = await lader.NotenLaden(token);
+                        einstellungen = await api.DruckeinstellungenLesen(token);
                     }
                     catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
                     {
@@ -102,7 +104,7 @@ public static class DruckEndpoints
 
                     log.LogInformation("Token {Token}: {Anzahl} Notenblätter geladen", token, noten.Count);
 
-                    var auftrag = new Druckauftrag(token, drucker!, noten, service, fachZuordnung);
+                    var auftrag = new Druckauftrag(token, drucker!, noten, einstellungen, service, fachZuordnung);
                     Druckergebnis ergebnis = auftrag.Ausfuehren();
 
                     log.LogInformation(
