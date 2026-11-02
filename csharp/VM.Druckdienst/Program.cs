@@ -5,6 +5,20 @@ using VM.Druckdienst.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var konfigFehler = KonfigPruefung.Pruefen(builder.Configuration);
+
+if (konfigFehler.Count > 0)
+{
+    Console.Error.WriteLine("Der Druckdienst startet nicht. Fehler in appsettings.json:");
+
+    foreach (string f in konfigFehler)
+    {
+        Console.Error.WriteLine($"  - {f}");
+    }
+
+    return 1;
+}
+
 builder.Host.UseSerilog((context, logConfig) => logConfig
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
@@ -27,6 +41,7 @@ builder.Services.AddSingleton<DruckerService>();
 builder.Services.AddHttpClient<ApiClient>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBasisUrl"]!);
+    client.Timeout = TimeSpan.FromSeconds(builder.Configuration.GetValue("ApiTimeoutSekunden", 30));
 });
 builder.Services.AddScoped<NotenLader>();
 
@@ -39,3 +54,5 @@ app.MapDruckerEndpoints();
 app.MapDruckEndpoints();
 
 app.Run();
+
+return 0;
