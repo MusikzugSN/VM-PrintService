@@ -22,4 +22,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+	<ItemGroup>
+		<None Include="..\TestPdfs\*.pdf" Link="TestPdfs\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
+
 </Project>
