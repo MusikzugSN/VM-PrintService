@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="../VM.Druckdienst.Tests/VM.Druckdienst.Tests.csproj" Id="ac002ba9-874d-4b0a-ac45-3f0297ee5651" />
   <Project Path="../VM.TestApi/VM.TestApi.csproj" Id="0445ce4e-c719-49d7-892c-3eb6ea6b617e" />
   <Project Path="VM.Druckdienst.csproj" />
 </Solution>
