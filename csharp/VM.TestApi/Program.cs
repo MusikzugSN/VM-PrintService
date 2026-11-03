@@ -29,6 +29,17 @@ var tokens = new Dictionary<string, int[]>
     ["letter"] = new[] { 10, 60 },
     ["duplex"] = new[] { 10, 70 }   
 };
+for (int i = 0; i < 375; i++)
+{
+    dateien[1000 + i] = (i % 3) switch
+    {
+        0 => "test-a4.pdf",
+        1 => "test-a3.pdf",
+        _ => "test-gemischt.pdf"
+    };
+}
+tokens["gross"] = Enumerable.Range(1000, 375).ToArray();
+
 
 app.MapGet("/api/v1/print/token-information", (string token) =>
 {
