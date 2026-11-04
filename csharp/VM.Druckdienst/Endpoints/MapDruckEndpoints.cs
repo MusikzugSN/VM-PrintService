@@ -16,31 +16,8 @@ public static class DruckEndpoints
                 var log = logFactory.CreateLogger("Druckauftrag");
 
 
-                var fehler = new Dictionary<string, string[]>();
-
-                if (string.IsNullOrWhiteSpace(token))
-                {
-                    fehler["token"] = new[] { "Kein Token angegeben." };
-                }
-                else if (!Regex.IsMatch(token, "^[A-Za-z0-9_-]+$"))
-                {
-                    fehler["token"] = new[] { "Der Token enthält ungültige Zeichen." };
-                }
-
                 string? drucker = anfrage?.Drucker;
-
-                if (string.IsNullOrWhiteSpace(drucker))
-                {
-                    fehler["drucker"] = new[] { "Kein Drucker angegeben." };
-                }
-                else if (!Regex.IsMatch(drucker, "^[A-Za-z0-9_-]+$"))
-                {
-                    fehler["drucker"] = new[] { "Der Druckername enthält ungültige Zeichen." };
-                }
-                else if (!service.DruckerNamenLesen().Contains(drucker))
-                {
-                    fehler["drucker"] = new[] { $"Drucker '{drucker}' gibt es nicht." };
-                }
+                var fehler = AnfragePruefung.Pruefen(token, drucker, service.DruckerNamenLesen);
 
                 if (fehler.Count > 0)
                 {
