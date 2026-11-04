@@ -68,5 +68,11 @@ POST {{host}}/api/v1/print/duplex
 Content-Type: application/json
 
 { "drucker": "PDF" }
+### 15. Big test → 200, 500 of 500 pages
+POST {{host}}/api/v1/print/gross
+Content-Type: application/json
+
+{ "drucker": "PDF" }
+
 
 

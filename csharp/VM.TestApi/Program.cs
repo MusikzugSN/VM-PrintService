@@ -40,6 +40,17 @@ for (int i = 0; i < 375; i++)
 }
 tokens["gross"] = Enumerable.Range(1000, 375).ToArray();
 
+for (int i = 0; i < 375; i++)
+{
+    dateien[1000 + i] = (i % 3) switch
+    {
+        0 => "test-a4.pdf",
+        1 => "test-a3.pdf",
+        _ => "test-gemischt.pdf"
+    };
+}
+tokens["gross"] = Enumerable.Range(1000, 375).ToArray();
+
 
 app.MapGet("/api/v1/print/token-information", (string token) =>
 {
@@ -63,6 +74,7 @@ app.MapGet("/api/v1/print/print-information", (string token) =>
         new { id = 1, name = "Einseitig",    minSeiten = 1, maxSeiten = 1,   duplex = false },
         new { id = 2, name = "Doppelseitig", minSeiten = 2, maxSeiten = 999, duplex = true  }
     });
+
 });
 
 app.MapGet("/api/v1/print/file/{id:int}", (int id, string token) =>
