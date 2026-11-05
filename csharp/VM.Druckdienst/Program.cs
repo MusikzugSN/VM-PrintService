@@ -1,3 +1,4 @@
+using System.Reflection;
 using Serilog;
 using Serilog.Events;
 using VM.Druckdienst.Endpoints;
@@ -19,20 +20,31 @@ if (konfigFehler.Count > 0)
     return 1;
 }
 
+string logOrdner = builder.Configuration["LogOrdner"] ?? "logs";
+
+if (!Path.IsPathRooted(logOrdner))
+{
+    logOrdner = Path.Combine(AppContext.BaseDirectory, logOrdner);
+}
+
 builder.Host.UseSerilog((context, logConfig) => logConfig
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
     .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
     .WriteTo.Console()
     .WriteTo.File(
-        Path.Combine(AppContext.BaseDirectory, "logs", "druckdienst-.log"),
+        Path.Combine(logOrdner, "druckdienst-.log"),
         rollingInterval: RollingInterval.Day,
         retainedFileCountLimit: 30));
+
+string[] erlaubteUrspruenge = builder.Configuration
+    .GetSection("ErlaubteUrspruenge")
+    .Get<string[]>() ?? Array.Empty<string>();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Website", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(erlaubteUrspruenge)
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
@@ -49,9 +61,13 @@ var app = builder.Build();
 
 app.UseCors("Website");
 
-app.MapGet("/api/v1/health", () => Results.Ok(new { status = "ok" }));
+string version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "unbekannt";
+
+app.MapGet("/api/v1/health", () => Results.Ok(new { status = "ok", version }));
 app.MapDruckerEndpoints();
 app.MapDruckEndpoints();
+
+app.Logger.LogInformation("VM-Druckdienst {Version} gestartet, Logs in {LogOrdner}", version, logOrdner);
 
 app.Run();
 

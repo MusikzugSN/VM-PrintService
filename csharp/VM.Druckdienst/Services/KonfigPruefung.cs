@@ -32,6 +32,19 @@ public static class KonfigPruefung
             fehler.Add($"ApiTimeoutSekunden '{timeout}' muss eine Zahl zwischen 1 und 300 sein.");
         }
 
+        foreach (var eintrag in config.GetSection("ErlaubteUrspruenge").GetChildren())
+        {
+            string? ursprung = eintrag.Value;
+
+            if (string.IsNullOrWhiteSpace(ursprung) ||
+                !Uri.TryCreate(ursprung, UriKind.Absolute, out Uri? u) ||
+                (u.Scheme != "http" && u.Scheme != "https") ||
+                u.AbsolutePath != "/" || ursprung.EndsWith("/"))
+            {
+                fehler.Add($"ErlaubteUrspruenge: '{ursprung}' muss eine Adresse ohne Pfad sein, z. B. http://localhost:4200");
+            }
+        }
+
         foreach (var eintrag in config.GetSection("Papierfaecher").GetChildren())
         {
             if (!Enum.TryParse(eintrag.Key, out Papierformat format) || format == Papierformat.Unbekannt)

@@ -12,7 +12,8 @@ public class KonfigPruefungTests
             ["ApiBasisUrl"] = "http://localhost:8417/api/v1/",
             ["ApiTimeoutSekunden"] = "30",
             ["Papierfaecher:A4"] = "Tray1",
-            ["Papierfaecher:A3"] = "Tray2"
+            ["Papierfaecher:A3"] = "Tray2",
+            ["ErlaubteUrspruenge:0"] = "http://localhost:4200"
         };
 
         foreach (var (key, wert) in aenderungen)
@@ -74,5 +75,26 @@ public class KonfigPruefungTests
 
         Assert.Single(fehler);
         Assert.Contains("A6", fehler[0]);
+    }
+
+    [Theory]
+    [InlineData("http://localhost:4200/")]
+    [InlineData("http://localhost:4200/noten")]
+    [InlineData("localhost:4200")]
+    [InlineData("")]
+    public void FalscherUrsprung_EinFehler(string ursprung)
+    {
+        var fehler = KonfigPruefung.Pruefen(Konfig(("ErlaubteUrspruenge:0", ursprung)));
+
+        Assert.Single(fehler);
+        Assert.Contains("ErlaubteUrspruenge", fehler[0]);
+    }
+
+    [Fact]
+    public void ZweiUrspruenge_KeineFehler()
+    {
+        var fehler = KonfigPruefung.Pruefen(Konfig(("ErlaubteUrspruenge:1", "https://noten.musikzug-neuhaus.de")));
+
+        Assert.Empty(fehler);
     }
 }
