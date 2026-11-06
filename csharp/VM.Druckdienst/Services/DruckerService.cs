@@ -46,62 +46,15 @@ public class DruckerService
         return ausgabeLesen.Result;
     }
 
-    
+    public List<string> DruckerNamenLesen() =>
+        CupsAusgabe.DruckerNamen(BefehlAusfuehren("lpstat -p"));
 
-   
-    public List<string> DruckerNamenLesen()
-    {
-        string ausgabe = BefehlAusfuehren("lpstat -p");
-        var namen = new List<string>();
 
-        foreach (string zeile in ausgabe.Split('\n'))
-        {
-            if (zeile.StartsWith("printer "))
-            {
-                namen.Add(zeile.Split(' ')[1]);
-            }
-        }
+    public string? StandardDruckerLesen() =>
+        CupsAusgabe.StandardDrucker(BefehlAusfuehren("lpstat -d"));
 
-        return namen;
-    }
-    public string? StandardDruckerLesen()
-    {
-        string ausgabe = BefehlAusfuehren("lpstat -d").Trim();
-        int pos = ausgabe.IndexOf(": ");
-
-        if (ausgabe.StartsWith("no system default") || pos < 0)
-        {
-            return null;
-        }
-
-        return ausgabe.Substring(pos + 2).Trim();
-    }
-    public List<Papierfach> PapierfaecherLesen(string drucker)
-    {
-        string ausgabe = BefehlAusfuehren($"lpoptions -p {drucker} -l");
-        var faecher = new List<Papierfach>();
-
-        foreach (string zeile in ausgabe.Split('\n'))
-        {
-            if (!zeile.StartsWith("InputSlot/"))
-            {
-                continue;
-            }
-
-            string werte = zeile.Substring(zeile.IndexOf(':') + 1).Trim();
-
-            foreach (string wert in werte.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-            {
-                faecher.Add(new Papierfach
-                {
-                    Name = wert.TrimStart('*'),
-                    IstStandard = wert.StartsWith('*')
-                });
-            }
-        }
-
-        return faecher;
-    }
+    public List<Papierfach> PapierfaecherLesen(string drucker) =>
+        CupsAusgabe.Papierfaecher(BefehlAusfuehren($"lpoptions -p {drucker} -l"));
     public static string LinuxPfad(string pfad)
     {
         if (!OperatingSystem.IsWindows())

@@ -75,8 +75,8 @@ Content-Type: application/json
 ### 15. Big test → 200, 500 of 500 pages
 POST {{host}}/api/v1/print/gross
 Content-Type: application/json
-
 { "drucker": "PDF" }
+
 ### 17. Health with version → {"status":"ok","version":"1.0.0"}
 GET {{host}}/api/v1/health
 
