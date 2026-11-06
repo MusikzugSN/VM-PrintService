@@ -68,11 +68,17 @@ POST {{host}}/api/v1/print/duplex
 Content-Type: application/json
 
 { "drucker": "PDF" }
+
+### 14. Config check
+# Put a wrong value into appsettings.json (e.g. "ApiBasisUrl": "localhost:8417") → F5 → service must not start.
+
 ### 15. Big test → 200, 500 of 500 pages
 POST {{host}}/api/v1/print/gross
 Content-Type: application/json
 
 { "drucker": "PDF" }
+### 17. Health with version → {"status":"ok","version":"1.0.0"}
+GET {{host}}/api/v1/health
 
 
 
