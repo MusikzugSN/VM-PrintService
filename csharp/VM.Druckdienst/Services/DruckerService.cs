@@ -25,10 +25,28 @@ public class DruckerService
         };
 
         using var prozess = Process.Start(info)!;
-        string ausgabe = prozess.StandardOutput.ReadToEnd();
-        prozess.WaitForExit();
-        return ausgabe;
+
+        Task<string> ausgabeLesen = prozess.StandardOutput.ReadToEndAsync();
+        Task<string> fehlerLesen = prozess.StandardError.ReadToEndAsync();
+
+        if (!prozess.WaitForExit(TimeSpan.FromSeconds(60)))
+        {
+            prozess.Kill(entireProcessTree: true);
+            _log.LogError("Befehl nach 60 Sekunden abgebrochen: {Befehl}", befehl);
+            return "";
+        }
+
+        string fehler = fehlerLesen.Result.Trim();
+
+        if (fehler.Length > 0)
+        {
+            _log.LogWarning("{Befehl} meldet: {Fehler}", befehl, fehler);
+        }
+
+        return ausgabeLesen.Result;
     }
+
+    
 
    
     public List<string> DruckerNamenLesen()
