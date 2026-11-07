@@ -1,0 +1,25 @@
+[Unit]
+Description=VM-Druckdienst (Noten drucken über CUPS)
+After=network-online.target cups.service
+Wants=network-online.target cups.service
+
+[Service]
+Type=simple
+User=vm-druckdienst
+WorkingDirectory=/opt/vm-druckdienst
+ExecStart=/opt/vm-druckdienst/VM.Druckdienst
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_NOLOGO=1
+Environment=LogOrdner=/var/log/vm-druckdienst
+LogsDirectory=vm-druckdienst
+Restart=always
+RestartSec=5
+SyslogIdentifier=vm-druckdienst
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
