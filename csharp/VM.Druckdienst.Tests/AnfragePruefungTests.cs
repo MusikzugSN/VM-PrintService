@@ -57,6 +57,6 @@ public class AnfragePruefungTests
 
         AnfragePruefung.Pruefen("abc123", "PDF; rm -rf /", Zaehlen);
 
-        Assert.Equal(0, aufrufe);   // lpstat is not called for a bad name
+        Assert.Equal(0, aufrufe); 
     }
 }
