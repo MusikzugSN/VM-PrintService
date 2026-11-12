@@ -4,9 +4,13 @@ namespace VM.Druckdienst.Services;
 
 public class Druckauftrag
 {
-    public static Druckeinstellung? EinstellungFinden(List<Druckeinstellung> einstellungen, int seiten)
+    public static Druckeinstellung? EinstellungFinden(List<Druckeinstellung> einstellungen,
+                                                      int seiten, Papierformat format)
     {
-        return einstellungen.FirstOrDefault(e => e.PasstZu(seiten));
+        return einstellungen
+            .Where(e => e.PasstZu(seiten, format))
+            .OrderBy(e => e.Modus == Druckmodus.Genau ? 0 : 1)
+            .FirstOrDefault();
     }
 
     public string Token { get; }
@@ -45,8 +49,8 @@ public class Druckauftrag
                     $"Note {blatt.Nummer} (Datei {blatt.Id}) ist kein lesbares PDF.", ex);
             }
 
-            Druckeinstellung? einstellung = EinstellungFinden(_einstellungen, blatt.Seiten.Count);
-            blatt.Duplex = einstellung?.Duplex ?? false;
+            Druckeinstellung? einstellung = EinstellungFinden(_einstellungen, blatt.Seiten.Count, blatt.Format);
+            blatt.Duplex = einstellung?.Duplex ?? DuplexModus.Nein;
         }
 
         var sortiert = DruckPlanung.Sortieren(Noten);

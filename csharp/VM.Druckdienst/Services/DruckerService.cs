@@ -110,9 +110,7 @@ public class DruckerService
                         befehl += $" -o InputSlot={fach}";
                     }
 
-                    befehl += blatt.Duplex && block.Count > 1
-                        ? " -o sides=two-sided-long-edge"
-                        : " -o sides=one-sided";
+                    befehl += SeitenOption(blatt.Duplex, block.Count);
 
                     befehl += $" \"{LinuxPfad(blatt.PdfPfad)}\"";
 
@@ -131,6 +129,21 @@ public class DruckerService
                 }
             }
         }
+    }
+
+    public static string SeitenOption(DuplexModus duplex, int seitenImAuftrag)
+    {
+        if (seitenImAuftrag < 2)
+        {
+            return " -o sides=one-sided";
+        }
+
+        return duplex switch
+        {
+            DuplexModus.LangeSeite => " -o sides=two-sided-long-edge",
+            DuplexModus.KurzeSeite => " -o sides=two-sided-short-edge",
+            _ => " -o sides=one-sided"
+        };
     }
 
 }

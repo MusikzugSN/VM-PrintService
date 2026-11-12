@@ -9,5 +9,5 @@ public class TokenInformation
 public class NotenEintrag
 {
     public int Id { get; set; }
-    public int Nummer { get; set; }
+    public string Nummer { get; set; } = "";
 }

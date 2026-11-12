@@ -6,7 +6,7 @@ public static class DruckPlanung
 {
     public static List<Notenblatt> Sortieren(List<Notenblatt> noten)
     {
-        return noten.OrderBy(n => n.Nummer).ToList();
+        return noten.OrderBy(n => n.Nummer, NotenNummer.Vergleich).ToList();
     }
     public static List<Druckgruppe> Gruppieren(List<Notenblatt> sortierteNoten)
     {

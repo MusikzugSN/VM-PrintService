@@ -14,6 +14,7 @@ Environment=LogOrdner=/var/log/vm-druckdienst
 LogsDirectory=vm-druckdienst
 Restart=always
 RestartSec=5
+RestartPreventExitStatus=1
 SyslogIdentifier=vm-druckdienst
 
 NoNewPrivileges=true

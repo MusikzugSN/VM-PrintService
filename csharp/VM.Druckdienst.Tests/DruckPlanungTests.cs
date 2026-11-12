@@ -23,7 +23,7 @@ public class DruckPlanungTests
         return new Notenblatt
         {
             Id = nummer * 10,
-            Nummer = nummer,
+            Nummer = nummer.ToString(),
             Seiten = formate.Select((f, i) => SeiteMit(i + 1, f)).ToList()
         };
     }
@@ -38,7 +38,7 @@ public class DruckPlanungTests
 
         var sortiert = DruckPlanung.Sortieren(noten);
 
-        Assert.Equal(new[] { 1, 2, 3 }, sortiert.Select(n => n.Nummer));
+        Assert.Equal(new[] { "1", "2", "3" }, sortiert.Select(n => n.Nummer));
     }
 
     [Fact]
