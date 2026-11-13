@@ -70,13 +70,13 @@ public static class DruckEndpoints
                             detail: "Die API hat zu lange nicht geantwortet.",
                             statusCode: 502);
                     }
-                    catch (InvalidOperationException ex)
+                    catch (System.Text.Json.JsonException ex)
                     {
-                        log.LogWarning("Token {Token}: {Fehler}", token, ex.Message);
+                        log.LogError(ex, "Token {Token}: API-Antwort hat ein unerwartetes Format", token);
                         return Results.Problem(
-                            title: "Keine Noten zum Token",
-                            detail: ex.Message,
-                            statusCode: 400);
+                            title: "Unerwartete Antwort der API",
+                            detail: "Die API hat Daten in einem unerwarteten Format geschickt. Es wurde nichts gedruckt.",
+                            statusCode: 502);
                     }
 
                     log.LogInformation("Token {Token}: {Anzahl} Notenblätter geladen", token, noten.Count);

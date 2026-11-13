@@ -81,4 +81,9 @@ Content-Type: application/json
 GET {{host}}/api/v1/health
 
 
+### 19. API sends a wrong format → 502, nothing printed
+POST {{host}}/api/v1/print/altformat
+Content-Type: application/json
+
+{ "drucker": "PDF" }
 
