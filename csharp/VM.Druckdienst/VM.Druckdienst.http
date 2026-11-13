@@ -76,6 +76,11 @@ Content-Type: application/json
 POST {{host}}/api/v1/print/gross
 Content-Type: application/json
 { "drucker": "PDF" }
+### 16. Note numbers as text → 200, A4 group: note 12 before 12a
+POST {{host}}/api/v1/print/nummern
+Content-Type: application/json
+
+{ "drucker": "PDF" }
 
 ### 17. Health with version → {"status":"ok","version":"1.0.0"}
 GET {{host}}/api/v1/health

@@ -55,6 +55,7 @@ public static class KonfigPruefung
                      !Regex.IsMatch(eintrag.Value, "^[A-Za-z0-9_-]+$"))
             {
                 fehler.Add($"Papierfaecher: Fach für {eintrag.Key} ist leer oder enthält ungültige Zeichen.");
+
             }
         }
 
