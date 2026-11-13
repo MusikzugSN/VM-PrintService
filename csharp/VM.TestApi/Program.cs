@@ -48,6 +48,9 @@ var einstellungen = new[]
 
 app.MapGet("/api/v1/print/token-information", (string token) =>
 {
+    if (token == "altformat")
+        return Results.Ok(new { token, noten = new[] { new { id = 10, nummer = 1 } } });
+
     if (!tokens.TryGetValue(token, out var noten))
         return Results.NotFound(new { fehler = "Token ungültig" });
 
